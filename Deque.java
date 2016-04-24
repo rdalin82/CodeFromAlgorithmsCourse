@@ -1,0 +1,122 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+
+public class Deque<Item> implements Iterable<Item> {
+    private Node<Item> sentinnel;
+    private int size = 0;
+    
+    public Deque(){
+        this.sentinnel = new Node<Item>();
+        sentinnel.next = sentinnel;
+        sentinnel.previous = sentinnel;
+        sentinnel.item = null;
+    }
+    
+    @SuppressWarnings("hiding")
+    private class Node<Item>{
+        Item item;
+        Node<Item> next;
+        Node<Item> previous;
+ 
+    }
+    public boolean isEmpty(){
+        boolean empty = false;
+        if (sentinnel.next == sentinnel && sentinnel.previous == sentinnel){
+            empty = true;
+        }
+        return empty;
+    }
+    
+    public int size(){   
+       return size;
+    }
+    public void addFirst(Item item){
+        if (item == null) throw new NullPointerException();
+        if (isEmpty()) {
+            Node<Item> n = new Node<Item>();
+            n.item = item;
+            sentinnel.next = n;
+            sentinnel.previous = n;
+            n.next = sentinnel;
+            n.previous = sentinnel;
+            size++;
+        } else {
+            Node<Item> oldfirst = sentinnel.next;
+            Node<Item> first = new Node<Item>();
+            first.item = item;
+            first.next = oldfirst;
+            first.previous = sentinnel;
+            oldfirst.previous = first;
+            sentinnel.next = first;
+            size++;
+        }
+    }
+    public void addLast(Item item){
+        if (item == null) throw new NullPointerException();
+        if (isEmpty()) {
+            Node<Item> n = new Node<Item>();
+            n.item = item;
+            sentinnel.next = n;
+            sentinnel.previous = n;
+            n.next = sentinnel;
+            n.previous = sentinnel;
+            size++;
+        } else { 
+            Node<Item> oldLast = sentinnel.previous;
+            Node<Item> last = new Node<Item>();
+            last.item = item;
+            last.next = sentinnel;
+            last.previous = oldLast;
+            oldLast.next = last;
+            sentinnel.previous = last;
+            size++;
+        }
+    }
+    public Item removeFirst(){
+        if (isEmpty()) throw new NoSuchElementException();
+        Node<Item>oldFirst = sentinnel.next;
+        Item item = oldFirst.item;
+        Node<Item> newFirst = oldFirst.next;
+        sentinnel.next = newFirst;
+        newFirst.previous = sentinnel;
+        size--;
+        return item;
+    }
+    public Item removeLast(){
+        if (isEmpty()) throw new NoSuchElementException();
+        Node<Item>oldLast = sentinnel.previous;
+        Item item = oldLast.item;
+        Node<Item> newLast = oldLast.previous;
+        sentinnel.previous = newLast;
+        newLast.next = sentinnel;
+        size--;
+        return item;
+       
+    }
+    public Iterator<Item> iterator(){
+        return new ListIterator<Item>(sentinnel.next);
+    }
+    
+    @SuppressWarnings("hiding")
+    private class ListIterator<Item> implements Iterator<Item>{
+        private Node<Item> current;
+        
+        public ListIterator(Node<Item> first){
+            this.current = first;
+        }
+        
+        public boolean hasNext(){ return current.item != null; } 
+        public void remove(){ throw new UnsupportedOperationException(); }
+        public Item next() {
+            if (!hasNext()) throw new NoSuchElementException();
+            Item item = current.item;
+            this.current = current.next;
+            return item;
+        }
+    }
+
+    public static void main(String[] args) {
+    }
+
+}
